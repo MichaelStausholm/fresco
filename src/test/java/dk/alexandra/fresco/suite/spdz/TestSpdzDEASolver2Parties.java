@@ -43,6 +43,7 @@ import dk.alexandra.fresco.framework.TestThreadRunner;
 import dk.alexandra.fresco.framework.TestThreadRunner.TestThreadConfiguration;
 import dk.alexandra.fresco.framework.TestThreadRunner.TestThreadFactory;
 import dk.alexandra.fresco.framework.configuration.NetworkConfiguration;
+import dk.alexandra.fresco.framework.configuration.PreprocessingStrategy;
 import dk.alexandra.fresco.framework.configuration.TestConfiguration;
 import dk.alexandra.fresco.framework.sce.configuration.TestSCEConfiguration;
 import dk.alexandra.fresco.framework.sce.evaluator.EvaluationStrategy;
@@ -86,21 +87,25 @@ public class TestSpdzDEASolver2Parties {
 			TestThreadConfiguration ttc = new TestThreadConfiguration();
 			ttc.netConf = netConf.get(playerId);
 
-			SpdzConfiguration spdzConf = new SpdzConfiguration() {
-				
-				@Override
-				public boolean useDummyData() {
-					return useDummyData;
-				}
-				
-				@Override
-				public String getTriplePath() {
-					return null;
-				}
+			SpdzConfiguration spdzConf = new SpdzConfiguration() {				
 				
 				@Override
 				public int getMaxBitLength() {
 					return 150;
+				}
+
+				@Override
+				public PreprocessingStrategy getPreprocessingStrategy() {
+					if(useDummyData) {
+						return PreprocessingStrategy.DUMMY;
+					} else {
+						return PreprocessingStrategy.STATIC;
+					}
+				}
+
+				@Override
+				public String fuelStationBaseUrl() {
+					return null;
 				}
 			};
 			ttc.protocolSuiteConf = spdzConf;
@@ -130,7 +135,7 @@ public class TestSpdzDEASolver2Parties {
 	}
 
 	private static final InMemoryStorage inMemStore = new InMemoryStorage();
-	private static final StreamedStorage streamedStorage = new FilebasedStreamedStorageImpl(inMemStore);
+	private static final FilebasedStreamedStorageImpl streamedStorage = new FilebasedStreamedStorageImpl(inMemStore);
 
 	@Test
 	public void test_DEASolver_2_Parallel_batched_dummy() throws Exception {
@@ -171,7 +176,7 @@ public class TestSpdzDEASolver2Parties {
 		int noOfThreads = 1;
 		InitializeStorage.cleanup();
 		try {
-			InitializeStorage.initStreamedStorage(new StreamedStorage[] {streamedStorage}, 2, noOfThreads, 20000, 500, 800000, 3000);
+			InitializeStorage.initStreamedStorage(streamedStorage, 2, noOfThreads, 20000, 500, 800000, 3000);
 			runTest(new DEASolverTests.TestDEASolver(4, 1, 10, 2), 2, noOfThreads,
 					EvaluationStrategy.SEQUENTIAL_BATCHED, StorageStrategy.STREAMED_STORAGE, false);
 		} finally {
@@ -185,7 +190,7 @@ public class TestSpdzDEASolver2Parties {
 		int noOfThreads = 2;
 		InitializeStorage.cleanup();
 		try {
-			InitializeStorage.initStreamedStorage(new StreamedStorage[] {streamedStorage}, 2, noOfThreads, 20000, 500, 800000, 3000);
+			InitializeStorage.initStreamedStorage(streamedStorage, 2, noOfThreads, 20000, 500, 800000, 3000);
 			runTest(new DEASolverTests.TestDEASolver(4, 1, 10, 2), 2, noOfThreads,
 					EvaluationStrategy.PARALLEL, StorageStrategy.STREAMED_STORAGE, false);
 		} finally {
@@ -199,7 +204,7 @@ public class TestSpdzDEASolver2Parties {
 		int noOfThreads = 2;		
 		InitializeStorage.cleanup();
 		try {
-			InitializeStorage.initStreamedStorage(new StreamedStorage[] {streamedStorage}, 2, noOfThreads, 20000, 500, 800000, 3000);
+			InitializeStorage.initStreamedStorage(streamedStorage, 2, noOfThreads, 20000, 500, 800000, 3000);
 			runTest(new DEASolverTests.TestDEASolver(4, 1, 10, 2), 2, noOfThreads,
 					EvaluationStrategy.PARALLEL_BATCHED, StorageStrategy.STREAMED_STORAGE, false);
 		} finally {
@@ -213,7 +218,7 @@ public class TestSpdzDEASolver2Parties {
 		int noOfThreads = 2;		
 		InitializeStorage.cleanup();
 		try {
-			InitializeStorage.initStreamedStorage(new StreamedStorage[] {streamedStorage}, 2, noOfThreads, 20000, 500, 800000, 3000);
+			InitializeStorage.initStreamedStorage(streamedStorage, 2, noOfThreads, 20000, 500, 800000, 3000);
 			runTest(new DEASolverTests.TestDEASolver(4, 1, 10, 2), 2, noOfThreads,
 					EvaluationStrategy.SEQUENTIAL_BATCHED, StorageStrategy.STREAMED_STORAGE, false);
 		} finally {
