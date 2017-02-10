@@ -35,9 +35,11 @@ import dk.alexandra.fresco.framework.ProtocolFactory;
 import dk.alexandra.fresco.framework.ProtocolProducer;
 import dk.alexandra.fresco.framework.value.OInt;
 import dk.alexandra.fresco.framework.value.SInt;
+import dk.alexandra.fresco.lib.debug.MarkerProtocolImpl;
 import dk.alexandra.fresco.lib.field.integer.BasicNumericFactory;
 import dk.alexandra.fresco.lib.field.integer.RandomFieldElementFactory;
 import dk.alexandra.fresco.lib.helper.ParallelProtocolProducer;
+import dk.alexandra.fresco.lib.helper.builder.UtilityBuilder;
 import dk.alexandra.fresco.lib.helper.sequential.SequentialProtocolProducer;
 import dk.alexandra.fresco.lib.lp.LPFactory;
 import dk.alexandra.fresco.lib.lp.LPFactoryImpl;
@@ -148,7 +150,7 @@ public class DEASolver implements Application{
 		ExpFromOIntFactory expFromOIntFactory = (ExpFromOIntFactory) provider;
 		PreprocessedExpPipeFactory expFactory = (PreprocessedExpPipeFactory) provider;
 		RandomFieldElementFactory randFactory = (RandomFieldElementFactory) provider;
-
+		UtilityBuilder utilityBuilder = new UtilityBuilder(provider);
 		//TODO get security parameter from somewhere
 		LPFactory lpFactory = new LPFactoryImpl(64, bnFactory, localInvFactory, numericBitFactory, expFromOIntFactory, expFactory, randFactory);
 		
@@ -175,7 +177,8 @@ public class DEASolver implements Application{
 			seq.append(currentPrefix);
 			iSeq.append(solver);
 			iSeq.append(optimalComputer);
-			
+			utilityBuilder.createMarker("Done with query "+(i+1)+" of "+targetInputs.size());
+			iSeq.append(utilityBuilder.getProtocol());
 			seq.append(iSeq);
 		}
 		return seq;
