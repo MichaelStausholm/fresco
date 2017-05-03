@@ -5,7 +5,6 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import dk.alexandra.fresco.framework.NativeProtocol.EvaluationStatus;
 import dk.alexandra.fresco.framework.sce.resources.SCEResourcePool;
 import dk.alexandra.fresco.suite.ProtocolSuite;
 
@@ -20,20 +19,14 @@ public class TestAbstractProtocolEvaluator {
       
       @Override
       public void setResourcePool(SCEResourcePool resourcePool) {
-        // TODO Auto-generated method stub
-        
       }
       
       @Override
       public void setProtocolInvocation(ProtocolSuite pii) {
-        // TODO Auto-generated method stub
-        
       }
       
       @Override
       public void processBatch(int batchId, NativeProtocol[] gates, int numOfGates) {
-        // TODO Auto-generated method stub
-        
       }
     };
   }

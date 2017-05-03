@@ -12,6 +12,7 @@ public class TestParty {
     Assert.assertThat(party.getPartyId(), Is.is(1));
   }
   
+  @SuppressWarnings("deprecation")
   @Test
   public void testToString() {
     Party party = new Party(1, "hostname", 8080, "myshared key");
