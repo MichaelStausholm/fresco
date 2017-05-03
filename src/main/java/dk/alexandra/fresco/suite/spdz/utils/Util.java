@@ -55,6 +55,7 @@ public class Util {
 	private static BigInteger p = null; //Should be set by an initiation call
 	private static BigInteger p_half;
 	private static int size = 0; //should be set by an initiation call
+	private MessageDigest H;
 	public static int EXP_PIPE_SIZE = 200+1; //R^-1, R, R^2, ..., R^200		
 	
 	public static final String ENCODING = "UTF-8";	
@@ -66,6 +67,14 @@ public class Util {
 		return p;
 	}
 	
+	public Util(){
+	  try{
+	    H = MessageDigest.getInstance("SHA-256");
+	  } catch(NoSuchAlgorithmException ignored){
+	    
+	  }
+	}
+	
 	public static void setModulus(BigInteger p) {		
 		Util.p = p;
 		Util.p_half = p.divide(BigInteger.valueOf(2));
@@ -75,19 +84,11 @@ public class Util {
 	public static int getModulusSize() {
 		return size;
 	}
-
-	private MessageDigest H;
+	
 	
 	public MessageDigest getHashFunction(){
-		if(H != null){
-			return H;
-		}
-		try{
-			H = MessageDigest.getInstance("SHA-256");
-		}catch(NoSuchAlgorithmException e){
-			e.printStackTrace();
-		}
-		return H;
+    
+      return H;
 	}
 	
 //	public static ReadableByteChannel getInputStream(String resource) throws IOException{
@@ -108,14 +109,16 @@ public class Util {
 		return actual;
 	}
 
-	public static InputStream getInputStream(String resource) throws IOException{
-		File f = new File(resource);
-		if (!f.exists()) {
-			throw new IllegalStateException("Resource not found :  " + resource);
+	public static InputStream getInputStream(String resource) {
+    try {
+      File f = new File(resource);
+      FileInputStream fileInputStream = new FileInputStream(f);
+      BufferedInputStream bis = new BufferedInputStream(fileInputStream, 100000*1024);
+      return bis;
+		} catch (Exception e) {
+		  throw new IllegalStateException("Resource could not be opened :  " + resource);
 		}
-		FileInputStream fileInputStream = new FileInputStream(f);
-		BufferedInputStream bis = new BufferedInputStream(fileInputStream, 100000*1024);
-		return bis;
+		
 	}
 	
 	/**
@@ -239,13 +242,6 @@ public class Util {
 	public static SInt[][] sIntFillRemaining(SInt[][] matrix, BasicNumericFactory factory) {
 		for(SInt[] vector: matrix) {
 			vector = sIntFillRemaining(vector, factory);
-		}
-		return matrix;
-	}
-		
-	public static SInt[][] sIntFill(SInt[][] matrix, BasicNumericFactory factory) {
-		for(SInt[] vector: matrix) {
-			vector = sIntFill(vector, factory);
 		}
 		return matrix;
 	}
