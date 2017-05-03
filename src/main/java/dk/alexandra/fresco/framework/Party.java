@@ -36,10 +36,7 @@ public class Party {
 	private String secretSharedKey;
 
 	public Party(int id, String host, int port) {
-		this.id = id;
-		this.host = host;
-		this.port = port;
-		this.secretSharedKey = null;
+	  this(id, host, port, null);
 	}
 	
 	/**

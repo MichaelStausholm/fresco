@@ -68,7 +68,7 @@ public class Reporter {
 		// Set this to false in order to turn of logging to stderr.
 		logger.setUseParentHandlers(false);
 	}
-
+	
 	public synchronized static void info(String msg) {
 		logger.info(msg);
 	}
@@ -170,31 +170,41 @@ public class Reporter {
 class CustomFormatter extends Formatter {
     private static final String DEFAULT_FORMAT = "[%t] (%T) %L: %m";
  
-    private final MessageFormat messageFormat;
+    private MessageFormat messageFormat;
  
     private final DateFormat dateFormat =
         new SimpleDateFormat("yyyy-MM-dd HH:mm:ss Z");
  
+    
+    
     /** */
     public CustomFormatter() {
+      super();
+      String propName = getClass().getName() + ".format";
+      String format = LogManager.getLogManager().getProperty(propName);
+      init(format);
+    }
+    
+    public CustomFormatter(String format) {
         super();
- 
-        // load the format from logging.properties
-        String propName = getClass().getName() + ".format";
-        String format = LogManager.getLogManager().getProperty(propName);
-        if (format == null || format.trim().length() == 0)
-            format = DEFAULT_FORMAT;
-        if (format.contains("{") || format.contains("}"))
-            throw new IllegalArgumentException("curly braces not allowed");
- 
-        // convert it into the MessageFormat form
-        format = format.replace("%L", "{0}").replace("%m", "{1}").replace("%M",
-            "{2}").replace("%t", "{3}").replace("%c", "{4}").replace("%T", "{5}").
-            replace("%n", "{6}").replace("%C", "{7}") + "\n";
- 
-        messageFormat = new MessageFormat(format);
+        init(format);
     }
  
+    private void init(String format) {
+      // load the format from logging.properties
+      if (format == null || format.trim().length() == 0)
+          format = DEFAULT_FORMAT;
+      if (format.contains("{") || format.contains("}"))
+          throw new IllegalArgumentException("curly braces not allowed");
+
+      // convert it into the MessageFormat form
+      format = format.replace("%L", "{0}").replace("%m", "{1}").replace("%M",
+          "{2}").replace("%t", "{3}").replace("%c", "{4}").replace("%T", "{5}").
+          replace("%n", "{6}").replace("%C", "{7}") + "\n";
+
+      messageFormat = new MessageFormat(format);     
+    }
+    
     @Override
     public String format(LogRecord record) {
         String[] arguments = new String[8];
@@ -208,8 +218,7 @@ class CustomFormatter extends Formatter {
                 arguments[1] = thrown.getMessage();
             }
         }
-        // %m
-        arguments[1] = record.getMessage();
+
         // %M
         if (record.getSourceMethodName() != null) {
             arguments[2] = record.getSourceMethodName();
@@ -218,9 +227,8 @@ class CustomFormatter extends Formatter {
         }
         // %t
         Date date = new Date(record.getMillis());
-        synchronized (dateFormat) {
-            arguments[3] = dateFormat.format(date);
-        }
+        arguments[3] = dateFormat.format(date);
+
         // %c
         if (record.getSourceClassName() != null) {
             arguments[4] = record.getSourceClassName();
@@ -239,8 +247,6 @@ class CustomFormatter extends Formatter {
             arguments[7] = arguments[4];
         }
  
-        synchronized (messageFormat) {
-            return messageFormat.format(arguments);
-        }
+        return messageFormat.format(arguments);
     }
 }
