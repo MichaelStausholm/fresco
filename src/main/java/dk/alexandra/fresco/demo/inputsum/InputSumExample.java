@@ -32,6 +32,10 @@ import dk.alexandra.fresco.framework.sce.SCEFactory;
 import dk.alexandra.fresco.framework.sce.configuration.SCEConfiguration;
 
 public class InputSumExample {
+  
+  public InputSumExample() throws InstantiationException{
+    throw new InstantiationException("InputSumExample is static and should not be instantiated.");
+  }
 
 	static void runApplication(int myId, SCE sce) {
 		InputApplication inputApp = null;

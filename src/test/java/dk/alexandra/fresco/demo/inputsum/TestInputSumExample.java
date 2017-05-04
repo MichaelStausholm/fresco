@@ -32,6 +32,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import dk.alexandra.fresco.framework.TestThreadRunner;
@@ -95,4 +96,10 @@ public class TestInputSumExample {
 		};		
 		runTest(f, 3);
 	}
+	
+	@Test(expected = InstantiationException.class)
+	public void testInstantiation() throws InstantiationException {
+	  InputSumExample example = new InputSumExample();
+	}
+
 }

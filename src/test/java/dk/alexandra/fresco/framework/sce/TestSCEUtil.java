@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 FRESCO (http://github.com/aicis/fresco).
+ * Copyright (c) 2015, 2016 FRESCO (http://github.com/aicis/fresco).
  *
  * This file is part of the FRESCO project.
  *
@@ -24,19 +24,53 @@
  * FRESCO uses SCAPI - http://crypto.biu.ac.il/SCAPI, Crypto++, Miracl, NTL,
  * and Bouncy Castle. Please see these projects for any further licensing issues.
  *******************************************************************************/
-package dk.alexandra.fresco.framework.util;
+package dk.alexandra.fresco.framework.sce;
 
-public class WaitAWhile {
-	
-	public WaitAWhile(int milliseconds) {
-		Object o = new Object();
-		synchronized (o) {
-			try {
-				o.wait(milliseconds);
-			} catch (InterruptedException e) {
-				// Doing nothing here is ok.
-			}
-		}
-	}
-	
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+
+import org.hamcrest.core.Is;
+import org.junit.Assert;
+import org.junit.Test;
+
+import dk.alexandra.fresco.framework.sce.util.Util;
+
+public class TestSCEUtil{
+
+  @Test(expected = InstantiationException.class) 
+  public void testConstructor() throws InstantiationException{
+    Util util = new Util();
+  }
+  
+  @Test
+  public void testGetInputStreamUtilClass() throws IOException {
+    InputStream is = Util.getInputStream("");
+    Assert.assertThat(is.available(), Is.is("Util.class".length()+1));
+  }
+
+  @Test
+  public void testGetInputStreamNonExistingResource() throws IOException {
+    try{
+      InputStream is = Util.getInputStream("resources/circuits/md5.txt");
+    }catch(FileNotFoundException e) {
+      Assert.assertThat(e.getMessage(), Is.is("Could not locate the resource resources/circuits/md5.txt"));  
+    }
+  }
+  
+  @Test
+  public void testGetInputStreamExistingResource(){
+    try{
+      InputStream is = Util.getInputStream("src/test/resources/circuits/md5.txt");
+      try {
+        Assert.assertThat(is.available(), Is.is(1781599)); // Magicnumber relates to the file above
+      } catch (IOException e) {
+        Assert.fail();
+      }
+    }catch(FileNotFoundException e) {
+      Assert.fail();
+    }
+  }
+  
+  
 }

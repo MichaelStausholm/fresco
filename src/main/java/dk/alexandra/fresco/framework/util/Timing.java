@@ -52,7 +52,7 @@ public class Timing {
 
     }
 
-    public String formatNanosAsMilliSeconds(double time) {
+    public static String formatNanosAsMilliSeconds(double time) {
         return time / 1000000.0 + " ms";
     }
 
